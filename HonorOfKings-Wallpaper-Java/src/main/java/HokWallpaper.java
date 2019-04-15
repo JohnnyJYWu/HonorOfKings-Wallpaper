@@ -6,6 +6,8 @@ import okhttp3.Request;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @version V1.0
@@ -15,7 +17,7 @@ import java.net.URLDecoder;
 
 public class HokWallpaper {
 
-    public static final String savePath = "E:\\test";//壁纸保存路径
+    public static final String savePath = "E:\\test"; //壁纸保存路径
 
     public static void main(String[] args) {
         downloadAllWallpaper();
@@ -34,12 +36,21 @@ public class HokWallpaper {
     }
 
     /**
+     * 解析选择的壁纸并执行下载任务
+     */
+    public static void downloadSelectedWallpaper(int page, int index) {
+        JSONArray list = getList(page);
+        analyzeWallpaper(list.getJSONObject(index));
+        FileDownload.getInstance().startTask();
+    }
+
+    /**
      * 获取全部壁纸信息，目前共有17页，每页20张壁纸
      */
     public static JSONArray getAllList() {
         JSONArray list = new JSONArray();
 
-        for (int i = 0; i < 17; i ++) {
+        for (int i = 0; i < 18; i ++) {
             list.fluentAddAll(getList(i));
         }
         System.out.println(list);
@@ -81,13 +92,16 @@ public class HokWallpaper {
         return list;
     }
 
+    private static final String[] size = {"", "_215_120", "_1024_768", "_1280_720", "_1280_1024",
+            "_1440_900", "_1920_1080", "_1920_1200", "_1920_1440"}; //分辨率后缀
+
     /**
      * 解析单张壁纸信息
      */
     public static void analyzeWallpaper(JSONObject object) {
-        String name = object.getString("sProdName");//壁纸名称
+        String name = object.getString("sProdName"); //壁纸名称
         System.out.println(name);
-        String time = object.getString("dtInputDT");//更新时间
+        String time = object.getString("dtInputDT"); //更新时间
         System.out.println(time);
 
         //容错，去除多余空格
@@ -97,45 +111,28 @@ public class HokWallpaper {
         if (name.charAt(name.length() - 1) == ' ') {
             name = name.substring(0, name.length() - 2);
         }
+        //去除非法字符
+        name = stringFilter(name);
 
         String filePath = savePath + "\\" + name;
         for (int No = 1; No <= 8; No ++) {
-            String sProdImg = "sProdImgNo_" + No;//sProdImgNo_1~8分别代表该壁纸官方发布的8种分辨率图片
+            String sProdImg = "sProdImgNo_" + No; //sProdImgNo_1~8分别代表该壁纸官方发布的8种分辨率图片
             sProdImg = object.getString(sProdImg);
-            sProdImg = sProdImg.substring(0, sProdImg.length() - 3) + '0';//将链接尾部的/200改为/0，所得链接为原图链接
+            sProdImg = sProdImg.substring(0, sProdImg.length() - 3) + '0'; //将链接尾部的/200改为/0，所得链接为原图链接
 
             System.out.println(sProdImg);
 
-            //命名规则：name_size.jpg（名称_分辨率.jpg）
-            String size = "";
-            switch (No) {
-                case 1:
-                    size = "_215_120";
-                    break;
-                case 2:
-                    size = "_1024_768";
-                    break;
-                case 3:
-                    size = "_1280_720";
-                    break;
-                case 4:
-                    size = "_1280_1024";
-                    break;
-                case 5:
-                    size = "_1440_900";
-                    break;
-                case 6:
-                    size = "_1920_1080";
-                    break;
-                case 7:
-                    size = "_1920_1200";
-                    break;
-                case 8:
-                    size = "_1920_1440";
-                    break;
-            }
-
-            FileDownload.getInstance().addTask(sProdImg, filePath, name + size + ".jpg");
+            FileDownload.getInstance().addTask(sProdImg, filePath, name + size[No] + ".jpg");
         }
+    }
+
+    /**
+     * 正则，过滤非法字符（创建文件夹）
+     */
+    public static String stringFilter(String str) {
+        String regEx="[\\:*?\"<>|\\/\\\\]";//windows文件名不允许包含（\/:*?"<>|），使用正则消除
+        Pattern p = Pattern.compile(regEx);
+        Matcher m = p.matcher(str);
+        return m.replaceAll("·").trim();
     }
 }

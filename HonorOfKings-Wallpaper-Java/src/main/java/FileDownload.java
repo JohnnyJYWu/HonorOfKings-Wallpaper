@@ -18,7 +18,7 @@ public class FileDownload {
 
     private static FileDownload instance;
 
-    public static FileDownload getInstance() {//单例模式
+    public static FileDownload getInstance() { //单例模式
         if (instance == null) {
             instance = new FileDownload();
         }
@@ -26,12 +26,12 @@ public class FileDownload {
         return instance;
     }
 
-    private LinkedList<HashMap<String, String>> linkedList = new LinkedList<>();//任务队列
+    private LinkedList<HashMap<String, String>> linkedList = new LinkedList<>(); //任务队列
 
     /**
      * 添加任务进入任务队列
      */
-    public void addTask(String imgUrl, String filePath, String fileName) {//下载地址、存储路径、文件名
+    public void addTask(String imgUrl, String filePath, String fileName) { //下载地址、存储路径、文件名
         HashMap<String, String> map = new HashMap<>();
         map.put("imgUrl", imgUrl);
         map.put("filePath", filePath);
@@ -72,10 +72,10 @@ public class FileDownload {
     /**
      * 下载图片
      */
-    public void downloadImg(String imgUrl, String filePath, String fileName) {//下载地址、存储路径、文件名
+    public void downloadImg(String imgUrl, String filePath, String fileName) { //下载地址、存储路径、文件名
         //创建文件的目录结构
         File files = new File(filePath);
-        if(!files.exists()){// 判断文件夹是否存在，如果不存在就创建一个文件夹
+        if(!files.exists()){ // 判断文件夹是否存在，如果不存在就创建一个文件夹
             files.mkdirs();
         }
         try {
