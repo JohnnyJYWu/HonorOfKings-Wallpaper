@@ -4,6 +4,7 @@ import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.regex.Matcher;
@@ -45,12 +46,12 @@ public class HokWallpaper {
     }
 
     /**
-     * 获取全部壁纸信息，目前共有17页，每页20张壁纸
+     * 获取全部壁纸信息，目前共有23页，每页20张壁纸
      */
     public static JSONArray getAllList() {
         JSONArray list = new JSONArray();
 
-        for (int i = 0; i < 18; i ++) {
+        for (int i = 0; i < 24; i ++) {
             list.fluentAddAll(getList(i));
         }
         System.out.println(list);
@@ -114,7 +115,7 @@ public class HokWallpaper {
         //去除非法字符
         name = stringFilter(name);
 
-        String filePath = savePath + "\\" + name;
+        String filePath = verifySavePath(savePath + "\\" + name);
         for (int No = 1; No <= 8; No ++) {
             String sProdImg = "sProdImgNo_" + No; //sProdImgNo_1~8分别代表该壁纸官方发布的8种分辨率图片
             sProdImg = object.getString(sProdImg);
@@ -124,6 +125,23 @@ public class HokWallpaper {
 
             FileDownload.getInstance().addTask(sProdImg, filePath, name + size[No] + ".jpg");
         }
+    }
+
+    private static String verifySavePath(String filePath) {
+        //创建文件的目录结构
+        File files = new File(filePath);
+        if(!files.exists()){ // 判断文件夹是否存在，如果不存在就创建一个文件夹
+            files.mkdirs();
+        } else { //如果文件夹存在，新建一个带后缀（n）的文件夹
+            int i = 0;
+            while (files.exists()) {
+                i ++;
+                files = new File(filePath + "(" + i + ")");
+            }
+            files.mkdirs();
+            filePath += "(" + i + ")";
+        }
+        return filePath;
     }
 
     /**
