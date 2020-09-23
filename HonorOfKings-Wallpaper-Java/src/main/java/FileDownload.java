@@ -45,7 +45,7 @@ public class FileDownload {
     public void startTask() {
         System.out.println("开始下载：共" + linkedList.size() + "项任务");
 
-        ExecutorService fixedThreadPool = Executors.newFixedThreadPool(5);
+        ExecutorService fixedThreadPool = Executors.newFixedThreadPool(8);
 
         while (!linkedList.isEmpty()) {
             final HashMap<String, String> map = linkedList.poll();
@@ -85,7 +85,7 @@ public class FileDownload {
             InputStream is = body.byteStream();
 
             // 创建文件
-            File file = new File(filePath + "//" + fileName);
+            File file = new File(filePath + "/" + fileName);
             FileOutputStream out = new FileOutputStream(file);
             int i = 0;
             while((i = is.read()) != -1){
@@ -97,7 +97,7 @@ public class FileDownload {
             System.out.println("下载完成：" + fileName);
         } catch (Exception e) {
             e.printStackTrace();
-            failLog("下载失败："+ filePath + "//" + fileName);
+            failLog("下载失败："+ filePath + "/" + fileName);
         }
     }
 
@@ -105,7 +105,7 @@ public class FileDownload {
      * 下载失败打印日志
      */
     public void failLog(String content) {
-        String filePath = HokWallpaper.savePath + "\\failLog.log";
+        String filePath = HokWallpaper.savePath + "/failLog.log";
         File file = new File(filePath);
 
         FileWriter fw;

@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 public class HokWallpaper {
 
-    public static final String savePath = "E:\\test"; //壁纸保存路径
+    public static final String savePath = "/Users/johnny/desktop/test"; //壁纸保存路径
 
     public static void main(String[] args) {
         downloadAllWallpaper();
@@ -33,7 +33,7 @@ public class HokWallpaper {
             analyzeWallpaper(list.getJSONObject(i));
         }
         FileDownload.getInstance().startTask();
-        FileDownload.getInstance().writeStringToFile(list.toString(), savePath + "\\list.json");
+        FileDownload.getInstance().writeStringToFile(list.toString(), savePath + "/list.json");
     }
 
     /**
